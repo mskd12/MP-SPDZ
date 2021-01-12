@@ -1,0 +1,40 @@
+# GF(2^128) multiplication
+# h = 5136de003d153fb6b40800728c82ab07
+# [b29591051cac1506f267cff1f44d5541, a66887867422316ffe657f232115a3d2, 0c395bc317d25df6fb83e5e19ee60b04, ]
+
+debug = False
+num_parties = 2
+H_shares = Array(num_parties, sgf2n)
+# Assuming same mask for all outputs
+masks = Array(num_parties, sgf2n)
+for j in range(num_parties):
+    H_shares[j] = sgf2n.get_input_from(j)
+    masks[j] = sgf2n.get_input_from(j)
+    if debug:
+        print_ln('Got %s from party %s', H_shares[j].reveal(), j)
+
+# Compute the full mask and the hash subkey (h)
+M = Array(num_parties+1, sgf2n)
+M[0] = sgf2n(0)
+
+tmp = Array(num_parties+1, sgf2n)
+tmp[0] = sgf2n(0)
+@for_range_opt(num_parties)
+def _(i):
+    tmp[i+1] = tmp[i] ^ H_shares[i]
+    M[i+1] = M[i] ^ masks[i]
+h = tmp[num_parties]
+full_mask = M[num_parties]
+
+# Compute h powers upto h^N
+N = 10
+P = Array(N, sgf2n)
+P[0] = h
+if debug:
+    print_ln('Computing upto h^%s for %s parties', N, num_parties)
+    print_ln('h = %s', P[0].reveal())
+
+@for_range_opt(N-1)
+def _(i):
+    P[i+1] = P[i] * h
+    print_ln('h^%s = %s', i+2, (P[i+1] ^ full_mask).reveal())
