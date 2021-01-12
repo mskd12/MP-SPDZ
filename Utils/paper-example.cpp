@@ -7,8 +7,6 @@
 
 #include "Math/gfp.hpp"
 #include "Machines/SPDZ.hpp"
-#include "Protocols/CowGearShare.h"
-#include "Protocols/CowGearPrep.hpp"
 
 template<class T>
 void run(char** argv, int prime_length);
@@ -16,10 +14,10 @@ void run(char** argv, int prime_length);
 int main(int argc, char** argv)
 {
     // bit length of prime
-    const int prime_length = 128;
+    // const int prime_length = 128;
 
     // compute number of 64-bit words needed
-    const int n_limbs = (prime_length + 63) / 64;
+    // const int n_limbs = (prime_length + 63) / 64;
 
     // need player number and number of players
     if (argc < 3)
@@ -28,15 +26,11 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    string protocol = "MASCOT";
+    string protocol = "SPDZ2k";
     if (argc > 3)
         protocol = argv[3];
 
-    if (protocol == "MASCOT")
-        run<Share<gfp_<0, n_limbs>>>(argv, prime_length);
-    else if (protocol == "CowGear")
-        run<CowGearShare<gfp_<0, n_limbs>>>(argv, prime_length);
-    else if (protocol == "SPDZ2k")
+    if (protocol == "SPDZ2k")
         run<Spdz2kShare<64, 64>>(argv, 0);
     else
     {
@@ -54,7 +48,7 @@ void run(char** argv, int prime_length)
     int n_parties = atoi(argv[2]);
     int port_base = 9999;
     Server::start_networking(N, my_number, n_parties, "localhost", port_base);
-    CryptoPlayer P(N);
+    PlainPlayer P(N);
 
     // initialize fields
     T::clear::init_default(prime_length);
