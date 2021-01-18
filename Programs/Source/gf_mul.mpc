@@ -27,14 +27,15 @@ h = tmp[num_parties]
 full_mask = M[num_parties]
 
 # Compute h powers upto h^N
-N = 10
+N = (16*4*16) + 2 # 256B
 P = Array(N, sgf2n)
 P[0] = h
 if debug:
     print_ln('Computing upto h^%s for %s parties', N, num_parties)
-    print_ln('h = %s', P[0].reveal())
+
+print_ln('1 %s', P[0].reveal())
 
 @for_range_opt(N-1)
 def _(i):
     P[i+1] = P[i] * h
-    print_ln('h^%s = %s', i+2, (P[i+1] ^ full_mask).reveal())
+    print_ln('%s %s', i+2, (P[i+1] ^ full_mask).reveal())

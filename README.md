@@ -6,6 +6,19 @@ Yao's garbled circuits, and computation based on
 three-party replicated secret sharing as well as Shamir's secret
 sharing (with an honest majority).
 
+#### Additional installation steps (Added for G-TLS)
+
+Since we only use spdz2k, follow below steps after following the original installation instructions below: 
+```
+make -j8 spdz2k-party.x
+./compile.py gf_mul
+echo "<in1> <mask1>" > Player-Data/Input-P0-0
+echo "<in2> <mask2>" > Player-Data/Input-P1-0
+Scripts/spdz2k.sh gf_mul
+``` 
+
+The script `run-spdz2k.sh` will be used by external code to run MP-SPDZ.
+
 #### Contact
 
 [Filing an issue on GitHub](../../issues) is the preferred way of contacting
